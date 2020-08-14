@@ -1,0 +1,32 @@
+from socket import *
+from cryptography.fernet import Fernet
+servidor = "127.0.0.1"
+porta = 60050
+
+chave = Fernet.generate_key()
+crypy = Fernet(chave)
+
+while True:
+    conexao = socket(AF_INET, SOCK_STREAM)
+    conexao.connect((servidor, porta))
+
+    kb_chave = bytes(chave)
+    conexao.send(kb_chave)
+    
+    while True:
+        mensagem = bytes(input("Digite uma mensagem: "), 'utf-8')
+        
+        # TEXTO CRIPTY ENVIAR SERVIDOR
+        texto_cripty = bytes(crypy.encrypt(mensagem))
+        
+        # ENVIAR MSG SERVIDOR
+        conexao.send(texto_cripty)
+        resposta = conexao.recv(1024)
+
+        # DECRYPT MSG RECEBIDA SERVIDOR
+        mensagem_recebida = crypy.decrypt(resposta)
+
+        # MOSTRAR MENSAGENS
+        print("Mensagem Criptografada: ", str(resposta))
+        print("Mensagem Decriptografada: ", mensagem_recebida)
+    conexao.close()
