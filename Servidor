@@ -1,0 +1,36 @@
+from socket import *
+from cryptography.fernet import Fernet
+servidor = "127.0.0.1"
+porta = 60050
+
+# CONEXAO SERVER
+conexao = socket(AF_INET, SOCK_STREAM)
+conexao.bind((servidor,porta))
+conexao.listen(2)
+
+print("Agurdando Conexao do Cliente")
+
+while True:
+    con, client = conexao.accept()
+    print("conectado com: ", client)
+    
+    key_cliente = con.recv(1024)
+    cipher_suite = Fernet(key_cliente)
+
+    while True:
+        # MENSAGEM RECEBIDA ENCRYPT CLIENTE
+        msg_recebida = con.recv(1024)
+        print("Mensagem Criptografada: ", str(msg_recebida))
+        
+        # DESCRYPT MENSAGEM RECEBIDA CLIENTE
+        decripted_msg_recebida = cipher_suite.decrypt(msg_recebida)
+        print("Mensagem Decriptografada: ", decripted_msg_recebida)
+
+        # ENVIAR MENSAGEM CLIENTE
+        msg_enviada = bytes(input("Digite uma mensagem: "), 'utf-8')
+        
+        # ENCRYPT ENVIAR MENSAGEM CLIENTE
+        encrypt_msg = bytes(cipher_suite.encrypt(msg_enviada))
+        con.send(encrypt_msg)
+
+    con.close()
