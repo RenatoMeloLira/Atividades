@@ -1,0 +1,78 @@
+from flask import Flask, request
+from flask_restful import Resource, Api
+from json import dumps
+from flask_jsonpify import jsonify
+import subprocess
+
+
+app = Flask(__name__)
+api = Api(app)
+
+class bem_vindo(Resource):
+    def get(self):
+        mensagem = "Bem Vindo a nossa API!!! Comandos de criacao > mkdir, rmdir, touch, rm, cat < ----- Comandos de informacao do sistema > ls, pwd, whoami, ifconfig < --- Comandos de usuario > useradd/nome do usuario, userdel/nome do usuario ------ EXEMPLO: http://127.0.0.1:5001/criacao/cat/abrir.csv"
+        return mensagem
+
+class criacao_tudo(Resource):
+    def get(self, employee_id, value):
+        if employee_id == "mkdir":
+            print(value)
+            mensagem = subprocess.check_output(["mkdir",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        elif employee_id == "rmdir":
+            print(value)
+            mensagem = subprocess.check_output(["rmdir",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        elif employee_id == "touch":
+            print(value)
+            mensagem = subprocess.check_output(["touch",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        elif employee_id == "rm":
+            print(value)
+            mensagem = subprocess.check_output(["rm",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        elif employee_id == "cat":
+            print(value)
+            mensagem = subprocess.check_output(["cat",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        else:
+            mensagem = "Comando invalido"
+        return mensagem
+
+class informacao(Resource):
+    def get(self, employee_id, value):
+        if employee_id == "comando":
+            print(value)
+            mensagem = subprocess.check_output(value)
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        else:
+            mensagem = "Comando invalido"
+        return mensagem
+
+class usuario(Resource):
+    def get(self, employee_id, value):
+        if employee_id == "useradd":
+            print(value)
+            mensagem = subprocess.check_output(["useradd",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+        elif employee_id == "userdel":
+            print(value)
+            mensagem = subprocess.check_output(["userdel",value])
+            mensagem = mensagem.decode("utf-8")
+            mensagem = str(mensagem)
+
+
+api.add_resource(bem_vindo, '/')        
+api.add_resource(criacao_tudo, '/criacao/<employee_id>/<value>')
+api.add_resource(informacao, '/info/<employee_id>/<value>')
+api.add_resource(usuario, '/user/<employee_id>/<value>')
+
+if __name__ == '__main__':
+     app.run(port='5001')
